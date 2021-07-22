@@ -32,7 +32,7 @@ class LoadData:
 class FeatureExtractor:
     def __init__(self):
         # Use VGG-16 as the architecture and ImageNet for the weight
-        base_model = VGG16(weights='/tmp/vgg16_weights_tf_dim_ordering_tf_kernels.h5imagenet')
+        base_model = VGG16(weights='weights/vgg16_weights_tf_dim_ordering_tf_kernels.h5')
         # Customize the model to return features from fully-connected layer
         self.model = Model(inputs=base_model.input, outputs=base_model.get_layer('fc1').output)
     def extract(self, img):
@@ -86,7 +86,7 @@ class Index:
         print("Saved the Indexed File:"+"[tmp/meta-data-files/image_features_vectors.ann]")
         t.save(config.image_features_vectors_ann)
     def Start(self):
-        if len(os.listdir("meta-data-files/"))==0:
+        if len(os.listdir("tmp/meta-data-files/"))==0:
             data = self.start_feature_extraction()
             self.start_indexing(data)
         else:
@@ -97,7 +97,7 @@ class Index:
                 self.start_indexing(data)
             else:
                 print("Meta data allready Present, Please Apply Search!")
-                print(os.listdir("meta-data-files/"))
+                print(os.listdir("tmp/meta-data-files/"))
 
 class SearchImage:
     def __init__(self):
