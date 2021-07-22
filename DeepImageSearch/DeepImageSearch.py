@@ -32,7 +32,7 @@ class LoadData:
 class FeatureExtractor:
     def __init__(self):
         # Use VGG-16 as the architecture and ImageNet for the weight
-        base_model = VGG16(weights='imagenet')
+        base_model = VGG16(weights='/tmp/vgg16_weights_tf_dim_ordering_tf_kernels.h5imagenet')
         # Customize the model to return features from fully-connected layer
         self.model = Model(inputs=base_model.input, outputs=base_model.get_layer('fc1').output)
     def extract(self, img):
@@ -64,8 +64,8 @@ class FeatureExtractor:
 class Index:
     def __init__(self,image_list:list):
         self.image_list = image_list
-        if 'meta-data-files' not in os.listdir():
-            os.makedirs("meta-data-files")
+        if 'tmp/meta-data-files' not in os.listdir():
+            os.makedirs("tmp/meta-data-files")
         self.FE = FeatureExtractor()
     def start_feature_extraction(self):
         image_data = pd.DataFrame()
@@ -74,7 +74,7 @@ class Index:
         image_data['features']  = f_data
         image_data = image_data.dropna().reset_index(drop=True)
         image_data.to_pickle(config.image_data_with_features_pkl)
-        print("Image Meta Information Saved: [meta-data-files/image_data_features.pkl]")
+        print("Image Meta Information Saved: [tmp/meta-data-files/image_data_features.pkl]")
         return image_data
     def start_indexing(self,image_data):
         self.image_data = image_data
@@ -83,7 +83,7 @@ class Index:
         for i,v in tqdm(zip(self.image_data.index,image_data['features'])):
             t.add_item(i, v)
         t.build(100) # 100 trees
-        print("Saved the Indexed File:"+"[meta-data-files/image_features_vectors.ann]")
+        print("Saved the Indexed File:"+"[tmp/meta-data-files/image_features_vectors.ann]")
         t.save(config.image_features_vectors_ann)
     def Start(self):
         if len(os.listdir("meta-data-files/"))==0:
